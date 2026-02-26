@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nëw — Tech That's Finally Yours</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23080808'/><text y='.9em' font-size='80' font-family='serif' fill='%23e8ff00' x='10'>ë</text></svg>"/>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #080808;
+      --surface: #111111;
+      --border: #1e1e1e;
+      --accent: #e8ff00;
+      --accent-dim: rgba(232, 255, 0, 0.08);
+      --text: #f0f0f0;
+      --muted: #555;
+      --muted-light: #888;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* Custom cursor */
+    .cursor {
+      position: fixed;
+      width: 10px; height: 10px;
+      background: var(--accent);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s ease, width 0.2s ease, height 0.2s ease;
+      mix-blend-mode: difference;
+    }
+    .cursor-ring {
+      position: fixed;
+      width: 36px; height: 36px;
+      border: 1px solid rgba(232,255,0,0.4);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: transform 0.12s ease, width 0.3s ease, height 0.3s ease, opacity 0.3s ease;
+    }
+    body:hover .cursor-ring { opacity: 1; }
+
+    /* Noise texture overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1000;
+      opacity: 0.4;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 28px 48px;
+      mix-blend-mode: normal;
+    }
+
+    .nav-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px;
+      letter-spacing: 6px;
+      color: var(--text);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .nav-logo span { color: var(--accent); }
+
+    .logo-mark {
+      width: 36px;
+      height: 36px;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'DM Sans', serif;
+      font-size: 22px;
+      font-weight: 300;
+      color: #000;
+      letter-spacing: 0;
+      flex-shrink: 0;
+      transition: transform 0.3s ease;
+    }
+
+    .nav-logo:hover .logo-mark { transform: rotate(10deg); }
+
+    .nav-links {
+      display: flex;
+      gap: 40px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted-light);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--accent); }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 120px 48px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-bg-char {
+      position: absolute;
+      right: -60px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(300px, 40vw, 600px);
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(232,255,0,0.06);
+      user-select: none;
+      pointer-events: none;
+      line-height: 1;
+      animation: floatChar 8s ease-in-out infinite;
+    }
+
+    @keyframes floatChar {
+      0%, 100% { transform: translateY(-50%) rotate(-2deg); }
+      50% { transform: translateY(-52%) rotate(2deg); }
+    }
+
+    .hero-eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 32px;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.2s forwards;
+    }
+
+    .hero-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(80px, 12vw, 180px);
+      line-height: 0.9;
+      letter-spacing: 2px;
+      max-width: 900px;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.4s forwards;
+    }
+
+    .hero-title .accent { color: var(--accent); }
+
+    .hero-sub {
+      margin-top: 48px;
+      font-size: clamp(16px, 2vw, 20px);
+      font-weight: 300;
+      color: var(--muted-light);
+      max-width: 480px;
+      line-height: 1.7;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.6s forwards;
+    }
+
+    .hero-form {
+      margin-top: 52px;
+      display: flex;
+      gap: 0;
+      max-width: 480px;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.8s forwards;
+    }
+
+    .hero-form input {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-right: none;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 300;
+      padding: 16px 20px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .hero-form input::placeholder { color: var(--muted); }
+    .hero-form input:focus { border-color: var(--accent); }
+
+    .hero-form button {
+      background: var(--accent);
+      color: #000;
+      border: 1px solid var(--accent);
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 16px 28px;
+      cursor: none;
+      font-weight: 400;
+      transition: background 0.2s, transform 0.1s;
+      white-space: nowrap;
+    }
+
+    .hero-form button:hover { background: #fff; border-color: #fff; }
+    .hero-form button:active { transform: scale(0.98); }
+
+    .hero-meta {
+      margin-top: 24px;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 1px;
+      opacity: 0;
+      animation: fadeUp 0.8s 1s forwards;
+    }
+
+    .hero-meta span { color: var(--accent); }
+
+    /* MARQUEE */
+    .marquee-wrap {
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 18px 0;
+      overflow: hidden;
+      background: var(--surface);
+    }
+
+    .marquee-track {
+      display: flex;
+      gap: 60px;
+      animation: marquee 20s linear infinite;
+      width: max-content;
+    }
+
+    .marquee-item {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 15px;
+      letter-spacing: 4px;
+      color: var(--muted);
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 60px;
+    }
+
+    .marquee-item::after {
+      content: '✦';
+      color: var(--accent);
+      font-size: 10px;
+    }
+
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    /* MANIFESTO */
+    .manifesto {
+      padding: 140px 48px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 48px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .section-label::before {
+      content: '';
+      width: 32px;
+      height: 1px;
+      background: var(--accent);
+    }
+
+    .manifesto-text {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(36px, 5vw, 72px);
+      line-height: 1.05;
+      letter-spacing: 1px;
+      color: var(--text);
+    }
+
+    .manifesto-text .dim { color: var(--muted); }
+    .manifesto-text .highlight { color: var(--accent); }
+
+    /* PILLARS */
+    .pillars {
+      padding: 0 48px 140px;
+    }
+
+    .pillars-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+    }
+
+    .pillar {
+      background: var(--bg);
+      padding: 48px 40px;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.3s;
+    }
+
+    .pillar:hover { background: var(--surface); }
+
+    .pillar:hover .pillar-num { color: var(--accent); }
+
+    .pillar-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 64px;
+      color: var(--border);
+      line-height: 1;
+      margin-bottom: 24px;
+      transition: color 0.3s;
+    }
+
+    .pillar-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px;
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+
+    .pillar-desc {
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--muted-light);
+      font-weight: 300;
+    }
+
+    /* FOUNDER */
+    .founder {
+      padding: 140px 48px;
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .founder-label { margin-bottom: 32px; }
+
+    .founder-quote {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(32px, 4vw, 56px);
+      line-height: 1.1;
+      letter-spacing: 1px;
+    }
+
+    .founder-quote .accent { color: var(--accent); }
+
+    .founder-bio {
+      font-size: 14px;
+      line-height: 1.8;
+      color: var(--muted-light);
+      margin-top: 32px;
+      font-weight: 300;
+      max-width: 420px;
+    }
+
+    .founder-right {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .stat-card {
+      border: 1px solid var(--border);
+      padding: 28px 32px;
+      background: var(--surface);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px; height: 100%;
+      background: var(--accent);
+    }
+
+    .stat-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 48px;
+      color: var(--accent);
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted-light);
+      margin-top: 8px;
+    }
+
+    /* WAITLIST BOTTOM */
+    .waitlist-bottom {
+      padding: 140px 48px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .waitlist-bottom::before {
+      content: 'NËW';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(150px, 25vw, 380px);
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(232,255,0,0.04);
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    .waitlist-bottom h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(48px, 7vw, 96px);
+      letter-spacing: 2px;
+      margin-bottom: 24px;
+      position: relative;
+    }
+
+    .waitlist-bottom p {
+      font-size: 16px;
+      color: var(--muted-light);
+      margin-bottom: 48px;
+      position: relative;
+    }
+
+    .bottom-form {
+      display: flex;
+      gap: 0;
+      max-width: 440px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .bottom-form input {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-right: none;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 300;
+      padding: 16px 20px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .bottom-form input:focus { border-color: var(--accent); }
+    .bottom-form input::placeholder { color: var(--muted); }
+
+    .bottom-form button {
+      background: var(--accent);
+      color: #000;
+      border: 1px solid var(--accent);
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 16px 28px;
+      cursor: none;
+      font-weight: 400;
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+
+    .bottom-form button:hover { background: #fff; border-color: #fff; }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 32px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .footer-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px;
+      letter-spacing: 6px;
+      color: var(--muted);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 32px;
+    }
+
+    .footer-links a {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: var(--accent); }
+
+    .footer-copy {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 1px;
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* SUCCESS STATE */
+    .success-msg {
+      display: none;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 2px;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-top: 16px;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      nav { padding: 20px 24px; }
+      .nav-links { display: none; }
+      .hero { padding: 100px 24px 60px; }
+      .hero-form { flex-direction: column; max-width: 100%; }
+      .hero-form input { border-right: 1px solid var(--border); border-bottom: none; }
+      .hero-form button { padding: 14px; }
+      .manifesto { padding: 80px 24px; }
+      .pillars { padding: 0 24px 80px; }
+      .pillars-grid { grid-template-columns: 1fr; }
+      .founder { grid-template-columns: 1fr; padding: 80px 24px; gap: 48px; }
+      .waitlist-bottom { padding: 80px 24px; }
+      .bottom-form { flex-direction: column; }
+      .bottom-form input { border-right: 1px solid var(--border); border-bottom: none; }
+      footer { flex-direction: column; gap: 20px; text-align: center; padding: 24px; }
+      .footer-links { flex-wrap: wrap; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- NAV -->
+  <nav>
+    <a href="#" class="nav-logo">
+      <div class="logo-mark">ë</div>
+      N<span>Ë</span>W
+    </a>
+    <ul class="nav-links">
+      <li><a href="#manifesto">Manifesto</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="https://discord.gg/wuN6NrYJ" target="_blank">Discord</a></li>
+      <li><a href="#waitlist">Join Waitlist</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg-char">Ë</div>
+    <p class="hero-eyebrow">— Est. 2026 · Bangalore → Europe</p>
+    <h1 class="hero-title">
+      Tech That's<br/>
+      <span class="accent">Finally</span><br/>
+      Yours.
+    </h1>
+    <p class="hero-sub">
+      We're building a generation of devices you actually configure — not just pick off a shelf. Nëw is a customisable tech brand built for people who refuse to compromise.
+    </p>
+    <form class="hero-form" onsubmit="handleSubmit(event, 'hero-success')">
+      <input type="email" placeholder="your@email.com" required />
+      <button type="submit">Join Waitlist</button>
+    </form>
+    <p class="success-msg" id="hero-success">✦ You're in. We'll be in touch.</p>
+    <p class="hero-meta">Be part of the founding community. <span>0 spam. Ever.</span></p>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee-wrap">
+    <div class="marquee-track">
+      <span class="marquee-item">Configure Everything</span>
+      <span class="marquee-item">Built for Europe</span>
+      <span class="marquee-item">Community First</span>
+      <span class="marquee-item">No Compromise</span>
+      <span class="marquee-item">Your Device. Your Rules</span>
+      <span class="marquee-item">Right to Customise</span>
+      <span class="marquee-item">Configure Everything</span>
+      <span class="marquee-item">Built for Europe</span>
+      <span class="marquee-item">Community First</span>
+      <span class="marquee-item">No Compromise</span>
+      <span class="marquee-item">Your Device. Your Rules</span>
+      <span class="marquee-item">Right to Customise</span>
+    </div>
+  </div>
+
+  <!-- MANIFESTO -->
+  <section class="manifesto" id="manifesto">
+    <p class="section-label reveal">Manifesto</p>
+    <p class="manifesto-text reveal">
+      <span class="dim">Every phone looks the same.</span><br/>
+      <span class="dim">Every laptop ships identical.</span><br/>
+      <span class="dim">Every earphone sounds uniform.</span><br/><br/>
+      <span>You were told this was</span> <span class="highlight">choice.</span><br/>
+      <span>It wasn't.</span><br/><br/>
+      <span class="dim">Nëw is the alternative.</span>
+    </p>
+  </section>
+
+  <!-- PILLARS -->
+  <section class="pillars">
+    <div class="pillars-grid">
+      <div class="pillar reveal">
+        <div class="pillar-num">01</div>
+        <div class="pillar-title">Configure</div>
+        <p class="pillar-desc">Choose your specs, materials, colours, and features before anything ships. Your preferences drive the product — not a factory's convenience.</p>
+      </div>
+      <div class="pillar reveal">
+        <div class="pillar-num">02</div>
+        <div class="pillar-title">Community</div>
+        <p class="pillar-desc">Every decision at Nëw is made with the community. Join Discord, vote on designs, shape what we build next. You're a founder, not a customer.</p>
+      </div>
+      <div class="pillar reveal">
+        <div class="pillar-num">03</div>
+        <div class="pillar-title">Built to Last</div>
+        <p class="pillar-desc">Upgradeable. Repairable. Sustainable. We're done with annual upgrade cycles designed to empty your wallet. Build once. Adapt forever.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOUNDER -->
+  <section class="founder" id="about">
+    <div class="founder-left">
+      <p class="section-label founder-label reveal">The Founder</p>
+      <div class="founder-quote reveal">
+        "I'm 16. I'm from <span class="accent">Bangalore.</span> And I'm building the tech brand Europe deserves."
+      </div>
+      <p class="founder-bio reveal">
+        Chaitanya is the founder of Nëw — building in public, from day one. No investors. No corporate agenda. Just a vision that tech should be yours, not theirs. Follow the journey on X and YouTube.
+      </p>
+    </div>
+    <div class="founder-right">
+      <div class="stat-card reveal">
+        <div class="stat-num">Day 1</div>
+        <div class="stat-label">We're just getting started</div>
+      </div>
+      <div class="stat-card reveal">
+        <div class="stat-num">100%</div>
+        <div class="stat-label">Community driven decisions</div>
+      </div>
+      <div class="stat-card reveal">
+        <div class="stat-num">0</div>
+        <div class="stat-label">Compromises on your config</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BOTTOM WAITLIST -->
+  <section class="waitlist-bottom" id="waitlist">
+    <h2 class="reveal">Be Part of Nëw.</h2>
+    <p class="reveal">Join the founding community. Shape what we build. Get early access to everything.</p>
+    <form class="bottom-form reveal" onsubmit="handleSubmit(event, 'bottom-success')">
+      <input type="email" placeholder="your@email.com" required />
+      <button type="submit">Join Now</button>
+    </form>
+    <p class="success-msg" id="bottom-success" style="position:relative;">✦ You're in. Welcome to Nëw.</p>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">NËW</div>
+    <div class="footer-links">
+      <a href="https://discord.gg/wuN6NrYJ" target="_blank">Discord</a>
+      <a href="#" target="_blank">X / Twitter</a>
+      <a href="#" target="_blank">YouTube</a>
+      <a href="#" target="_blank">Instagram</a>
+    </div>
+    <div class="footer-copy">© 2026 Nëw</div>
+  </footer>
+
+  <script>
+    // Custom cursor
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      cursor.style.left = mx + 'px';
+      cursor.style.top = my + 'px';
+    });
+
+    function animateRing() {
+      rx += (mx - rx) * 0.12;
+      ry += (my - ry) * 0.12;
+      ring.style.left = rx + 'px';
+      ring.style.top = ry + 'px';
+      requestAnimationFrame(animateRing);
+    }
+    animateRing();
+
+    document.querySelectorAll('a, button, input').forEach(el => {
+      el.addEventListener('mouseenter', () => {
+        cursor.style.width = '20px';
+        cursor.style.height = '20px';
+        ring.style.width = '56px';
+        ring.style.height = '56px';
+      });
+      el.addEventListener('mouseleave', () => {
+        cursor.style.width = '10px';
+        cursor.style.height = '10px';
+        ring.style.width = '36px';
+        ring.style.height = '36px';
+      });
+    });
+
+    // Scroll reveal
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => entry.target.classList.add('visible'), i * 80);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    reveals.forEach(el => observer.observe(el));
+
+    // Form submit
+    function handleSubmit(e, successId) {
+      e.preventDefault();
+      const form = e.target;
+      const success = document.getElementById(successId);
+      form.style.display = 'none';
+      success.style.display = 'block';
+    }
+  </script>
+</body>
+</html>
